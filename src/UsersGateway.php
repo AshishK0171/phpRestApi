@@ -23,20 +23,16 @@ class UsersGateway{
         }
         return $data;
     }
-    public function get(string $id):array{
+    public function get(string $id):array|false{
         $sql = "SELECT *
                 FROM users
                 WHERE id = :id";
                 
-                $stmt = $this->conn->prepare($sql);
-        
-        $stmt->bindValue(":id", $id, PDO::PARAM_INT);        $stmt->execute();
-        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":id", $id, PDO::PARAM_INT);        
+        $stmt->execute();
         $data = null;
-        
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $data[] = $row;
-        }
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
         return $data;
     }
     

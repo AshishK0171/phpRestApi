@@ -36,9 +36,15 @@ class UserController{
         }
     }
     private function processResourceRequest(string $method, string $id){
+        $user = $this->gateway->get($id);
+                if(empty($user)||$user == false){
+                    http_response_code(404);
+                    echo json_encode(["message"=>"user not found"]);
+                    return;
+                }
         switch($method){
             case "GET":
-                echo json_encode($this->gateway->get($id));
+                echo json_encode($user);
                 break;
             case "DELETE":
                 $rows = $this->gateway->delete($id);

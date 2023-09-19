@@ -1,0 +1,36 @@
+api for my php rest api
+baseurl = localhost/{dir_name}
+api for USERS:
+
+To get all the users.
+GET: /users
+    404 with json: if user does not exist
+    200 with json array: if exist.
+
+To get single user.
+GET: /users/{id}
+response:
+    404 with json: if user does not exist
+    200 with json: if valid user.
+
+To create a new user.
+POST: /users
+body: {
+    "name":"value1",
+    "password":"value2"
+}
+response:
+    422: if either or both password and username are missing
+    200 with json: if valid user.
+
+To validate existing user.
+POST: /users/login
+body: {
+    "name":"value1",
+    "password":"value2"
+}
+response:
+    422: if either or both password and username are missing
+    401: if credentials are not validate.
+    200 with json: if valid user.
+

@@ -30,7 +30,10 @@ if(empty($parts[2])){
 }
 switch($parts[2]){
     case "products":
-        $id = $parts[3] ?? null;
+        if(isset($parts[3])){
+            $id = $parts[3] ?? null;
+        }
+        else $id = null;
         $database = new Database("localhost", "product_db", "root", "");
         $gateway = new ProductGateway($database);
         $controller = new ProductController($gateway);
@@ -40,11 +43,16 @@ switch($parts[2]){
         $database = new Database("localhost", "product_db", "root", "");
         $gateway = new UsersGateway($database);
         $controller = new UserController($gateway);
-        if($parts[3]=="login"||$parts[3]=="Login"){
+        if(isset($parts[3]) &&($parts[3]=="login"||$parts[3]=="Login")){
             $controller->processAuthentication($_SERVER["REQUEST_METHOD"]);
             break;
         }
-        $id = $parts[3] ?? null;
+        if(isset($parts[3])){
+            $id = $parts[3] ?? null;
+        }
+        else{
+            $id = null;
+        }
         $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
         break;
     default:

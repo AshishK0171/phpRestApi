@@ -38,7 +38,7 @@ class UserController{
     private function processResourceRequest(string $method, string $id){
         switch($method){
             case "GET":
-                echo json_encode($this->gateway->getAll());
+                echo json_encode($this->gateway->get($id));
                 break;
             case "DELETE":
                 $rows = $this->gateway->delete($id);

@@ -6,10 +6,7 @@ declare(strict_types=1);
 spl_autoload_register(function ($class) {
     require __DIR__ . "/src/$class.php";
 });
-// include "./src/Database.php";
-// include "./src/ErrorHandler.php";
-// include "./src/ProductController.php";
-// include "./src/ProductGateway.php";
+
 set_error_handler("ErrorHandler::handleError");
 set_exception_handler("ErrorHandler::handleException");
 
@@ -40,38 +37,20 @@ switch($parts[2]){
         $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
         break;
     case "users":
-        $id = $parts[3] ?? null;
         $database = new Database("localhost", "product_db", "root", "");
         $gateway = new UsersGateway($database);
         $controller = new UserController($gateway);
+        if($parts[3]=="login"||$parts[3]=="Login"){
+            $controller->processAuthentication($_SERVER["REQUEST_METHOD"]);
+            break;
+        }
+        $id = $parts[3] ?? null;
         $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
         break;
     default:
         http_response_code(404);
         exit;
 }
-
-//echo count($parts);
-// foreach($parts as $part){
-//     echo $part."<br>";
-// }
-// if ($parts[2] != "products") {
-//     http_response_code(404);
-//     exit;
-// }
-// if(empty($parts[2])){
-//     http_response_code(404);
-//     exit;
-// }
-
-// $id = $parts[3] ?? null;
-
-// $database = new Database("localhost", "product_db", "root", "");
-
-// $gateway = new ProductGateway($database);
-
-// $controller = new ProductController($gateway);
-// $controller->processRequest($_SERVER["REQUEST_METHOD"], $id);
 ?>
 
 

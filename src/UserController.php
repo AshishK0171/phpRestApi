@@ -2,6 +2,29 @@
 class UserController{
     public function __construct(private UsersGateway $gateway) {
     }
+    public function processAuthentication($method) {
+        if($method =="POST"){
+            $data = (array) json_decode(file_get_contents("php://input"), true);
+            $errors = $this->getValidationErrors($data);
+            if(!empty($errors)){
+                http_response_code(422);
+                echo json_encode(["message"=>"username &(or) password cannot be empty"]);
+                return;
+            }
+            $validUser = $this->gateway->getvaliduser($data);
+            if(empty($validUser)){
+                http_response_code(401);
+                echo json_encode(["message"=>"Invalid username and /or password"]);
+                return;
+            }
+            echo json_encode($validUser);
+        }
+        else{
+            http_response_code(404);
+            header("Allow: POST");
+        }
+       
+    }
     public function processRequest(string $method, ?string $id): void
     {
         if ($id) {
@@ -9,14 +32,12 @@ class UserController{
             $this->processResourceRequest($method, $id);
             
         } else {
-            echo " : Multi : ";
             $this->processCollectionRequest($method);
         }
     }
     private function processResourceRequest(string $method, string $id){
         switch($method){
             case "GET":
-                echo "In get";
                 echo json_encode($this->gateway->getAll());
                 break;
             case "DELETE":
@@ -27,7 +48,6 @@ class UserController{
                 ]);
                 break;
             default:
-            //echo "In default";
             http_response_code(500);
             header("Allow: GET, PATCH, DELETE");
             break;
@@ -36,18 +56,11 @@ class UserController{
     }
 
     private function processCollectionRequest(string $method){
-        var_dump($method);
-        echo "asjhdlak sjkdfha :";
-        if($method == "GET"){
-            echo " : It is GET : ";
-        }
         switch($method){
             case "GET":
-                echo ":: In the get::";
                 echo json_encode($this->gateway->getAll());
                 break;
             case "POST":
-                echo ": In the post :";break;
                 $data = (array) json_decode(file_get_contents("php://input"), true);
                 $errors = $this->getValidationErrors($data);
                 
@@ -70,7 +83,6 @@ class UserController{
             http_response_code(405);
             header("Allow: GET, POST");
         }
-        echo " END of switch ";
     }
     private function getValidationErrors(array $data, bool $is_new = true): array
     {
